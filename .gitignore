@@ -1,0 +1,61 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment directories
+venv/
+.env/
+.venv/
+env/
+env.bak/
+venv.bak/
+
+# Pytest cache
+.cache/
+
+# IDE or editor settings
+.idea/
+.vscode/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+
+# Pytest coverage reports
+coverage.xml
+*.cover
+*.py,cover
+nosetests.xml
+test_*.xml
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+
+# VS Code settings folder
+.vscode/
+
+# Pylint reports
+pylint-report.txt
+pylint-global-message.txt
+
+# Coverage report directories
+htmlcov/
+*.coverage
+
+# FastAPI auto-generated docs
+docs/
+
+# Log files
+*.log
+
+# Other potentially sensitive files
+*.env
+*.sqlite3
