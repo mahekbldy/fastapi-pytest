@@ -6,7 +6,7 @@
 
 **Mocking** is the process of replacing real objects or functions with **fake (mocked) versions** to isolate behavior during testing.
 
-- Use when you don’t want to call actual dependencies (e.g., database, API).
+- Use when you don’t want to call actual dependencies (e.g., database, API, function).
 - Common for testing in isolation, verifying calls, and controlling return values.
 
 ---
@@ -18,52 +18,129 @@
 
 ---
 
-## 🔧 Basic Example with `patch`
+
+# ✅ Using @patch to Simulate /users API in Pytest
+
+This section demonstrates how to use the `patch` decorator from Python's `unittest.mock` library to simulate the `/users` API in FastAPI. The test mocks the `load_users` function, which would normally fetch users from a database or another source, and returns mock data instead.
+
+---
+
+## 🧪 Test Case: `test_users_with_mocked_data`
 
 ```python
-from unittest.mock import patch
+# test_user.py
 
-# code.py
-def get_username(api):
-    return api.fetch_user()["username"]
+@patch("app.routes.users.load_users", return_value=mock_user_data)
+def test_users_with_mocked_data(mock_load, client, token):
+    """Test /users with a mocked load_users function."""
+    headers = {"Authorization": f"Bearer {token}"}
+    response = client.get("/users", headers=headers)
 
-# test_code.py
-@patch("code.api.fetch_user")
-def test_get_username(mock_fetch):
-    mock_fetch.return_value = {"username": "mocked_user"}
-    assert get_username(api="ignored") == "mocked_user"
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    assert data[0]["name"] == "Mock M"
+    assert mock_load.called
 ```
+- 🔍 Explanation
 
-## 🧪 Using Mock and MagicMock
+| Line                                                                 | Description                                                                                                                                                                                                                 |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mock_user_data = [...]`                                             | This list contains the mock user data that will be returned by the `load_users` function. This is what the `/users` endpoint will use for the test.                                                                         |
+| `@patch("app.routes.users.load_users", return_value=mock_user_data)` | The `patch` decorator is used to replace the `load_users` function in the `app.routes.users` module with a mock version that returns the `mock_user_data`. This prevents actual database or external calls during the test. |
+| `def test_users_with_mocked_data(mock_load, client, token):`         | This test case will use the mocked `load_users` function and test the `/users` endpoint. The `mock_load` argument represents the mocked function, while `client` and `token` are provided by pytest fixtures.               |
+| `headers = {"Authorization": f"Bearer {token}"}`                     | The `Authorization` header is set with the `Bearer` token, which is required for authentication to access the `/users` endpoint.                                                                                            |
+| `response = client.get("/users", headers=headers)`                   | This simulates an HTTP GET request to the `/users` endpoint with the given authorization token.                                                                                                                             |
+| `assert response.status_code == 200`                                 | Asserts that the response status code is 200, meaning the request was successful.                                                                                                                                           |
+| `assert len(data) == 2`                                              | Verifies that the response data contains 2 users, which matches the length of `mock_user_data`.                                                                                                                             |
+| `assert data[0]["name"] == "Mock M"`                                 | Checks that the name of the first user in the response matches the expected value "Mock M".                                                                                                                                 |
+| `assert mock_load.called`                                            | Verifies that the `load_users` function (mocked by `patch`) was called during the test.                                                                                                                                     |
 
-Mock and MagicMock are used to create mock objects that simulate real objects or behaviors.
-Mock
+
+
+# ✅ Using Mock to Simulate Login Behavior in Pytest
+
+This section demonstrates how to use Python's `unittest.mock.Mock` to simulate the behavior of `authenticate_user` in our FastAPI project for testing login functionality without executing actual authentication logic.
+
+---
+
+## 🧪 Test Case: `test_login_success_with_mock`
+
+
 ```python
-from unittest.mock import Mock
+#test_auth.py
+def test_login_success_with_mock(client):
+    """Test login by mocking authenticate_user with Mock."""
+    mock_auth = Mock()
+    
+    mock_auth.return_value = User(
+        id=99,
+        username="mockeduser",
+        password="admin123",
+        name="Mocked Name",
+        role="tester"
+    )
 
-mock_api = Mock()
-mock_api.fetch_user.return_value = {"username": "test"}
-
-assert mock_api.fetch_user()["username"] == "test"
+    with patch("app.routes.auth.authenticate_user", mock_auth):
+        response = client.post("/auth/login", data={"username": "mockeduser", "password": "secret"})
+        assert response.status_code == 200
+        json_data = response.json()
+        assert "access_token" in json_data
+        assert mock_auth.call_count == 1
 ```
+- 🔍 Explanation
 
-Mock is a general-purpose mock object used to simulate objects, like API calls or database connections.
+| Line                                                    | Description                                                                                                                                                                                       |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mock_auth = Mock()`                                    | Creates a mock object that will simulate the behavior of the `authenticate_user` function during the test.                                                                                        |
+| `mock_auth.return_value = User(...)`                    | This tells the mock object to return a predefined `User` object whenever it is called. We are simulating the scenario where a user with the given credentials exists and can successfully log in. |
+| `patch("app.routes.auth.authenticate_user", mock_auth)` | This line uses `patch` to temporarily replace the real `authenticate_user` function in the `auth` module with our mock object during the execution of the test.                                   |
+| `client.post(...)`                                      | This simulates a POST request to the login endpoint of your FastAPI app, with the username and password as inputs.                                                                                |
+| `assert response.status_code == 200`                    | Since the `authenticate_user` function is mocked to return a valid user, we assert that the response status is 200, meaning the login was successful.                                             |
+| `assert "access_token" in response.json()`              | After a successful login, the response should include an "access\_token" (JWT). This assertion ensures that the token is returned in the response.                                                |
+| `assert mock_auth.call_count == 1`                      | This checks how many times the `mock_auth` function was called. We expect it to have been called exactly once in this test case.                                                                  |
 
-You can define return values for methods, like fetch_user.return_value.
+# ✅ Using MagicMock to Simulate Login Behavior in Pytest
 
-## MagicMock
+This section demonstrates how to use Python's `unittest.mock.MagicMock` to simulate the behavior of `authenticate_user` in our FastAPI project for testing login functionality without executing actual authentication logic. `MagicMock` extends the basic `Mock` class, providing additional functionality like automatic handling of magic methods (e.g., `__getitem__`, `__iter__`).
+
+---
+
+## 🧪 Test Case: `test_login_success_with_magicmock`
+
 
 ```python
-from unittest.mock import MagicMock
+#test_auth.py
+def test_login_success_with_magicmock(client):
+    """Test login by mocking authenticate_user with MagicMock."""
+    mock_auth = MagicMock()
+    
+    mock_auth.return_value = User(
+        id=99,
+        username="mockeduser",
+        password="admin123",
+        name="Mocked Name",
+        role="tester"
+    )
 
-mock_list = MagicMock()
-mock_list.__len__.return_value = 5
-
-assert len(mock_list) == 5
+    with patch("app.routes.auth.authenticate_user", mock_auth):
+        response = client.post("/auth/login", data={"username": "mockeduser", "password": "secret"})
+        assert response.status_code == 200
+        json_data = response.json()
+        assert "access_token" in json_data
+        assert mock_auth.call_count == 1
 ```
-MagicMock is a subclass of Mock that can also handle special methods like __len__, __getitem__, etc.
+- 🔍 Explanation
 
-It is useful when you need to mock more complex behaviors, such as operator overloading or special methods.
+| Line                                                    | Description                                                                                                                                                                                    |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mock_auth = MagicMock()`                               | Creates a `MagicMock` object. While `Mock` is used for simple mocking, `MagicMock` provides additional features such as automatic handling of magic methods (e.g., `__getitem__`, `__iter__`). |
+| `mock_auth.return_value = User(...)`                    | This line configures the mock to return a predefined `User` object when the mock is called.                                                                                                    |
+| `patch("app.routes.auth.authenticate_user", mock_auth)` | This replaces the real `authenticate_user` function in the `auth` module with our mock during the test execution.                                                                              |
+| `client.post(...)`                                      | Simulates a POST request to the login endpoint of your FastAPI app, passing test credentials.                                                                                                  |
+| `assert response.status_code == 200`                    | Asserts that the login was successful and the HTTP status code is 200.                                                                                                                         |
+| `assert "access_token" in response.json()`              | Checks that the response includes an "access\_token", ensuring that JWT authentication was successful.                                                                                         |
+| `assert mock_auth.call_count == 1`                      | Verifies that the `mock_auth` function was called exactly once, confirming that the mock was used as expected.                                                                                 |
 
 ## 🧰 Patching Objects and Methods
 

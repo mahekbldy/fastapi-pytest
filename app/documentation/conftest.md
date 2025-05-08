@@ -39,18 +39,28 @@ tests/
 ```python
 import pytest
 
+# Fixture to create a JWT token for a user
 @pytest.fixture
-def sample_user():
-    return {"id": 1, "name": "Alice"}
+def token(mock_users):
+    user = mock_users[0]  # Use the first user as a default (admin)
+    return create_access_token(user)
+
 ```
 
-### `test_users.py`
+### `test_user.py`
 ```python
-def test_user_name(sample_user):
-    assert sample_user["name"] == "Alice"
+def test_filter_by_id(client, token):
+    """Test filtering users by ID."""
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = client.get("/users/?id=1", headers=headers)
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["id"] == 1
+
 ```
 
-- `sample_user` is **automatically injected** — no need to import from `conftest.py`.
+- `token` is **automatically injected** — no need to import from `conftest.py`.
 
 ---
 

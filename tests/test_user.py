@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 from app.main import app  # FastAPI app import
+from unittest.mock import patch
 
 # Test User Listing with Filters
 def test_list_users_with_filters(client, token):
@@ -90,3 +91,34 @@ def test_filter_with_invalid_id(client, token):
     response = client.get("/users/?id=999", headers=headers)
     assert response.status_code == 200
     assert len(response.json()) == 0  # No users with ID 999
+
+
+
+
+mock_user_data = [
+    {"id": 10, "username": "mocker", "password": "secret", "name": "Mock M", "role": "tester"},
+    {"id": 11, "username": "fake", "password": "fake", "name": "Fake User", "role": "user"},
+]
+
+
+@patch("app.routes.users.load_users", return_value=mock_user_data)
+def test_users_with_mocked_data(mock_load, client, token):
+    """Test /users with a mocked load_users function."""
+    headers = {"Authorization": f"Bearer {token}"}
+    response = client.get("/users", headers=headers)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    assert data[0]["name"] == "Mock M"
+    assert mock_load.called
+
+
+@patch("app.routes.users.load_users", return_value=[])
+def test_users_empty_list(mock_load, client, token):
+    """Test /users returns empty list if load_users returns nothing."""
+    headers = {"Authorization": f"Bearer {token}"}
+    response = client.get("/users", headers=headers)
+
+    assert response.status_code == 200
+    assert response.json() == []

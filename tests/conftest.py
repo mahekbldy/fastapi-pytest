@@ -33,3 +33,28 @@ def token(mock_users):
     user = mock_users[0]  # Use the first user as a default (admin)
     return create_access_token(user)
 
+
+
+@pytest.fixture(scope="session")
+def session_scope_fixture():
+    print("\n[Setup] Session-scope fixture")
+    yield "session-scope"
+    print("\n[Teardown] Session-scope fixture")
+
+@pytest.fixture(scope="module")
+def module_scope_fixture():
+    print("\n[Setup] Module-scope fixture")
+    yield "module-scope"
+    print("\n[Teardown] Module-scope fixture")
+
+@pytest.fixture(scope="function")
+def function_scope_fixture():
+    print("\n[Setup] Function-scope fixture")
+    yield "function-scope"
+    print("\n[Teardown] Function-scope fixture")
+
+@pytest.fixture(scope="class")
+def class_scope_fixture():
+    print("\n[Setup] Class-scope fixture")
+    yield "class-scope"
+    print("\n[Teardown] Class-scope fixture")
