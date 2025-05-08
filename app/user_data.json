@@ -1,0 +1,12 @@
+[
+  { "id": 1, "username": "admin", "password": "admin123", "name": "Alice", "role": "admin" },
+  { "id": 2, "username": "john", "password": "johnpass", "name": "John Doe", "role": "user" },
+  { "id": 3, "username": "jane", "password": "janepass", "name": "Jane Smith", "role": "user" },
+  { "id": 4, "username": "bob", "password": "bobpass", "name": "Bob", "role": "user" },
+  { "id": 5, "username": "eva", "password": "evapass", "name": "Eva", "role": "admin" },
+  { "id": 6, "username": "tom", "password": "tompass", "name": "Tom Hardy", "role": "user" },
+  { "id": 7, "username": "lisa", "password": "lisapass", "name": "Lisa Ray", "role": "manager" },
+  { "id": 8, "username": "raj", "password": "rajpass", "name": "Raj Kumar", "role": "user" },
+  { "id": 9, "username": "neha", "password": "nehapass", "name": "Neha Sharma", "role": "user" },
+  { "id": 10, "username": "mark", "password": "markpass", "name": "Mark Lee", "role": "manager" }
+]
