@@ -154,7 +154,7 @@ Each file covers critical aspects of Pytest, including fixtures, mocking, lifecy
 
 ---
 
-📘 Start with [`fixture.md`](documentation/fixture.md) if you're new to fixtures, then check [`mocking.md`](./documentation/mocking.md) to understand how mocking integrates with FastAPI testing.
+📘 Start with [`fixture.md`](app/documentation/fixture.md) if you're new to fixtures, then check [`mocking.md`](app/documentation/mocking.md) to understand how mocking integrates with FastAPI testing.
 
 
 Happy Testing! 💡
