@@ -135,4 +135,26 @@ Fixtures used:
 
 ---
 
+## 🔍 Pytest Documentation Guide
+
+To understand and master **Pytest** in the context of this project, explore the detailed documentation files provided under the [`/documentation`](./documentation) folder.
+
+Each file covers critical aspects of Pytest, including fixtures, mocking, lifecycle behavior, and more — all tailored with examples from this project.
+
+### 📂 Contents of `/documentation`:
+
+| File Name       | Description                                                                 |
+|-----------------|-----------------------------------------------------------------------------|
+| `conftest.md`   | Explanation of how `conftest.py` works, including shared fixtures and hooks |
+| `fixture.md`    | In-depth details on Pytest fixtures, scopes (`function`, `module`, etc.), and autouse usage |
+| `lifecycle.md`  | Lifecycle of fixtures: when and how they are initialized and destroyed      |
+| `mocking.md`    | Practical examples of `Mock`, `MagicMock`, and `@patch` in test cases       |
+
+> ✅ All examples in these files are directly based on this FastAPI project (e.g., login, users API), making them easy to understand and apply.
+
+---
+
+📘 Start with [`fixture.md`](documentation/fixture.md) if you're new to fixtures, then check [`mocking.md`](./documentation/mocking.md) to understand how mocking integrates with FastAPI testing.
+
+
 Happy Testing! 💡
